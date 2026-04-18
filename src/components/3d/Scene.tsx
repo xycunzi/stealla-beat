@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
 import { Vortex } from './Vortex';
+import { ParticleField } from './ParticleField';
 
 class CanvasErrorBoundary extends React.Component<{ children: React.ReactNode, fallback: React.ReactNode }, { hasError: boolean }> {
   constructor(props: { children: React.ReactNode, fallback: React.ReactNode }) {
@@ -72,8 +73,8 @@ export function Scene({ intensity = 0.5, vortexColor = '#00f0ff' }) {
             <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
             
             <Vortex intensity={intensity} color={vortexColor} />
+            <ParticleField count={intensity > 0.6 ? 5000 : 2000} color={vortexColor} />
             
-            {/* Post-processing could be added here for bloom, but keeping it light for now */}
           </Canvas>
         </CanvasErrorBoundary>
       ) : (

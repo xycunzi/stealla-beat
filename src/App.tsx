@@ -7,17 +7,35 @@ import { useState } from 'react';
 import { StudentDiary } from './components/StudentDiary';
 import { TeacherView } from './components/TeacherView';
 import { ParentView } from './components/ParentView';
+import { LoginView } from './components/LoginView';
 import { CyberButton } from './components/ui/CyberUI';
-import { Hexagon, BookUser, Orbit, Sparkles, Globe } from 'lucide-react';
+import { Hexagon, BookUser, Orbit, Sparkles, Globe, LogOut, Cpu } from 'lucide-react';
 import { I18nProvider, useTranslation } from './hooks/useTranslation';
+import { AIProvider, useAI } from './hooks/useGemini';
+import { motion, AnimatePresence } from 'framer-motion';
+
+type Role = 'student' | 'teacher' | 'parent';
 
 function AppContent() {
-  const [view, setView] = useState<'student' | 'teacher' | 'parent'>('student');
+  const [view, setView] = useState<Role | null>(null);
   const { t, toggleLang, lang } = useTranslation();
+  const { provider, setProvider } = useAI();
+
+  const toggleAI = () => setProvider(provider === 'gemini' ? 'doubao' : 'gemini');
+
+  if (!view) {
+    return (
+      <>
+        <div className="scanlines"></div>
+        <LoginView onLogin={(role) => setView(role)} />
+      </>
+    );
+  }
 
   return (
     <div className="w-full h-base-height lg:h-screen flex flex-col font-sans bg-space-navy text-text-primary relative overflow-hidden">
       <div className="starfield"></div>
+      <div className="scanlines"></div>
       
       {/* Desktop Navigation */}
       <header className="hidden md:flex absolute top-0 w-full z-50 p-6 items-center justify-between pointer-events-none">
@@ -30,7 +48,7 @@ function AppContent() {
           </h1>
         </div>
         
-        <div className="flex gap-2 pointer-events-auto bg-panel-bg backdrop-blur-xl p-2 rounded-xl border border-glass-border shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+        <div className="flex gap-2 pointer-events-auto bg-panel-bg backdrop-blur-xl p-2 rounded-xl border border-glass-border shadow-[0_4px_24px_rgba(0,0,0,0.2)] items-center">
           <CyberButton 
             variant={view === 'student' ? 'primary' : 'ghost'} 
             active={view === 'student'} 
@@ -59,30 +77,68 @@ function AppContent() {
           <div className="w-px h-6 bg-glass-border mx-2 self-center"></div>
 
           <button 
+            onClick={toggleAI}
+            className={`px-4 py-2 flex items-center gap-2 transition-colors font-mono text-xs font-bold ${provider === 'gemini' ? 'text-electric-blue custom-shadow border-electric-blue/50' : 'text-vortex-orange custom-shadow border-vortex-orange/50'} border rounded-md`}
+          >
+            <Cpu size={16} />
+            {provider === 'gemini' ? 'CORE: GEMINI' : 'CORE: DOUBAO'}
+          </button>
+
+          <button 
             onClick={toggleLang}
             className="px-4 py-2 flex items-center gap-2 text-text-secondary hover:text-electric-blue transition-colors font-mono text-xs font-bold"
           >
             <Globe size={16} />
             {lang.toUpperCase()}
           </button>
+
+          <button 
+            onClick={() => setView(null)}
+            className="px-3 py-2 flex items-center gap-2 text-text-secondary hover:text-vortex-crimson transition-colors"
+          >
+            <LogOut size={16} />
+          </button>
         </div>
       </header>
 
-      {/* Mobile Lang Toggle */}
-      <div className="md:hidden absolute top-4 right-4 z-50">
+      {/* Mobile Lang & Logout Toggle */}
+      <div className="md:hidden absolute top-4 right-4 z-50 flex gap-2">
+         <button 
+            onClick={toggleAI}
+            className={`w-10 h-10 flex items-center justify-center rounded-xl bg-panel-bg border transition-colors shadow-lg ${provider === 'gemini' ? 'text-electric-blue border-electric-blue/50' : 'text-vortex-orange border-vortex-orange/50'}`}
+          >
+            <Cpu size={18} />
+          </button>
          <button 
             onClick={toggleLang}
             className="w-10 h-10 flex items-center justify-center rounded-xl bg-panel-bg border border-glass-border text-text-secondary hover:text-electric-blue transition-colors shadow-lg"
           >
             <Globe size={18} />
           </button>
+          <button 
+            onClick={() => setView(null)}
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-panel-bg border border-glass-border text-text-secondary hover:text-vortex-crimson transition-colors shadow-lg"
+          >
+            <LogOut size={18} />
+          </button>
       </div>
 
       {/* Main Content Area */}
       <main className="flex-1 w-full h-[calc(100vh-5rem)] md:h-full md:pt-24 z-10 overflow-hidden relative">
-        {view === 'student' && <StudentDiary />}
-        {view === 'teacher' && <TeacherView />}
-        {view === 'parent' && <ParentView />}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={view}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.02 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-full"
+          >
+            {view === 'student' && <StudentDiary />}
+            {view === 'teacher' && <TeacherView />}
+            {view === 'parent' && <ParentView />}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Mobile Bottom Navigation */}
@@ -116,7 +172,9 @@ function AppContent() {
 export default function App() {
   return (
     <I18nProvider>
-      <AppContent />
+      <AIProvider>
+        <AppContent />
+      </AIProvider>
     </I18nProvider>
   );
 }

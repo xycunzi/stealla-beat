@@ -1,10 +1,8 @@
 import { useState, useMemo } from 'react';
 import { CyberPanel, CyberButton } from './ui/CyberUI';
 import { Users, Radar, Loader2, Sparkles, BrainCircuit, ShieldAlert, Activity } from 'lucide-react';
-import { GoogleGenAI } from '@google/genai';
 import { useTranslation } from '../hooks/useTranslation';
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+import { useAI } from '../hooks/useGemini';
 
 const MOCK_STUDENTS = [
   { id: '1', name: 'Alex M.', energy: 0.2, type: 'Performance Anxiety', log: 'Terrified of the math final. I can\'t sleep.' },
@@ -18,24 +16,22 @@ export function TeacherView() {
   const [advice, setAdvice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const { generateText } = useAI();
 
   const activeAlerts = useMemo(() => MOCK_STUDENTS.filter(s => s.energy > 0.6).length, []);
   const avgEnergy = useMemo(() => MOCK_STUDENTS.reduce((acc, s) => acc + s.energy, 0) / MOCK_STUDENTS.length, []);
 
-  const generateAdvice = async (student: typeof MOCK_STUDENTS[0]) => {
+  const handleGenerateAdvice = async (student: typeof MOCK_STUDENTS[0]) => {
     setLoading(true);
     try {
       const prompt = `
-You are the AI Assistant for a teacher. We use a concept called "Consciousness Energy".
 A student named ${student.name} is experiencing an obsession vortex: "${student.type}".
 Recent log: "${student.log}"
 Generate a short (3-4 sentences) guidance script for the teacher to use when talking to this student. Frame it gently, using the "energy perspective" (e.g. "I noticed your energy has been tangled...").
       `;
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-      });
-      setAdvice(response.text || 'Error generating advice.');
+      const systemInst = `You are the AI Assistant for a teacher. We use a concept called "Consciousness Energy".`;
+      const text = await generateText(prompt, systemInst);
+      setAdvice(text || 'Error generating advice.');
     } catch (e) {
       console.error(e);
       setAdvice('Comm-link disrupted. Cannot fetch AI guidance.');
@@ -47,14 +43,15 @@ Generate a short (3-4 sentences) guidance script for the teacher to use when tal
   return (
     <div className="w-full h-full p-4 md:p-8 flex flex-col md:flex-row gap-6 overflow-y-auto pb-24 md:pb-8">
       {/* List Panel */}
-      <div className="w-full md:w-80 flex flex-col gap-4 shrink-0">
+      <div className="w-full md:w-80 flex flex-col gap-4 shrink-0 z-10">
         <h2 className="font-display font-medium text-xl text-eco-green flex items-center gap-2 uppercase">
           <Radar className="animate-[spin_6s_linear_infinite]" /> {t('teacher_starmap')}
         </h2>
 
         {/* Global Class Stats */}
-        <CyberPanel title={t('teacher_class_status')} className="border-eco-green/30">
-          <div className="grid grid-cols-2 gap-4">
+        <CyberPanel title={t('teacher_class_status')} className="border-eco-green/30 relative overflow-hidden backdrop-blur-xl">
+          <div className="absolute -right-10 -top-10 w-32 h-32 bg-eco-green/10 blur-3xl rounded-full pointer-events-none" />
+          <div className="grid grid-cols-2 gap-4 relative z-10">
             <div className="bg-white/5 p-3 rounded-lg border border-white/5">
               <div className="text-[10px] text-text-secondary mb-1 flex items-center gap-1 uppercase">
                 <ShieldAlert size={12} className="text-vortex-crimson" /> {t('teacher_active_alerts')}
@@ -74,7 +71,7 @@ Generate a short (3-4 sentences) guidance script for the teacher to use when tal
           {MOCK_STUDENTS.map(s => (
             <CyberPanel 
               key={s.id} 
-              className={`cursor-pointer transition-all shrink-0 w-64 md:w-full snap-start ${selectedStudent.id === s.id ? 'border-eco-green bg-eco-green/5' : 'hover:border-glass-border opacity-70 hover:opacity-100'}`}
+              className={`cursor-pointer transition-all shrink-0 w-64 md:w-full snap-start backdrop-blur-md ${selectedStudent.id === s.id ? 'border-eco-green bg-eco-green/10 shadow-[0_0_15px_rgba(57,255,20,0.1)]' : 'hover:border-glass-border opacity-70 hover:opacity-100'}`}
             >
               <div 
                 className="flex justify-between items-center"
@@ -92,18 +89,20 @@ Generate a short (3-4 sentences) guidance script for the teacher to use when tal
       </div>
 
       {/* Detail Panel */}
-      <div className="flex-1 flex flex-col">
-        <CyberPanel title={`${t('teacher_profile')}: ${selectedStudent.name}`} className="flex-1 flex flex-col border-eco-green/20">
-          <div className="space-y-6">
+      <div className="flex-1 flex flex-col z-10">
+        <CyberPanel title={`${t('teacher_profile')}: ${selectedStudent.name}`} className="flex-1 flex flex-col border-eco-green/20 backdrop-blur-xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
+          <div className="space-y-6 relative z-10">
             <div>
               <h4 className="text-xs font-mono tracking-widest text-text-secondary mb-3 uppercase">{t('teacher_vortex_sig')}</h4>
-              <div className="text-sm md:text-base font-sans font-medium text-text-primary bg-white/[0.03] p-5 rounded-lg border border-glass-border">
+              <div className="text-sm md:text-base font-sans font-medium text-text-primary bg-white/[0.03] p-5 rounded-lg border border-glass-border relative">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-eco-green/50 rounded-l" />
                 "{selectedStudent.log}"
               </div>
             </div>
 
             <div className="pt-2">
-              <CyberButton onClick={() => generateAdvice(selectedStudent)} className="w-full md:w-auto hover:bg-eco-green/10 border-eco-green text-eco-green">
+              <CyberButton onClick={() => handleGenerateAdvice(selectedStudent)} className="w-full md:w-auto hover:bg-eco-green/10 border-eco-green text-eco-green">
                 {loading ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
                 {t('teacher_btn_generate')}
               </CyberButton>
@@ -111,7 +110,7 @@ Generate a short (3-4 sentences) guidance script for the teacher to use when tal
 
             {advice && (
               <div className="mt-6 p-5 bg-panel-bg border border-eco-green/30 rounded-xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-eco-green" />
+                <div className="absolute top-0 left-0 w-1 h-full bg-eco-green shadow-[0_0_10px_var(--color-eco-green)]" />
                 <h4 className="flex items-center gap-2 text-xs font-mono text-eco-green mb-3 font-bold uppercase tracking-widest ml-3">
                   <BrainCircuit size={14} className="text-accent-purple" /> {t('teacher_ai_recommendation')}
                 </h4>

@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { Scene } from './3d/Scene';
 import { CyberPanel, CyberButton } from './ui/CyberUI';
 import { useGemini } from '../hooks/useGemini';
-import { Send, Activity, BrainCircuit, Sparkles, Wifi } from 'lucide-react';
+import { Send, Activity, BrainCircuit, Sparkles, Wifi, Waves } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '../hooks/useTranslation';
+import { useGenerativeAudio } from '../hooks/useGenerativeAudio';
 
 export function StudentDiary() {
   const { messages, sendMessage, isTyping, intensity, vortexColor } = useGemini();
   const [input, setInput] = useState('');
   const { t } = useTranslation();
+  const { isPlaying, toggleAudio } = useGenerativeAudio(intensity);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -23,7 +25,7 @@ export function StudentDiary() {
       <Scene intensity={intensity} vortexColor={vortexColor} />
 
       {/* Energy HUD */}
-      <div className="absolute top-4 left-4 right-4 md:right-auto md:w-72 md:top-8 md:left-8 z-20">
+      <div className="absolute top-4 left-4 right-4 md:right-auto md:w-80 md:top-8 md:left-8 z-20">
         <CyberPanel title={t('student_telemetry')}>
           <div className="space-y-5">
             <div>
@@ -61,6 +63,15 @@ export function StudentDiary() {
                 {intensity > 0.7 ? t('student_status_critical') : intensity > 0.4 ? t('student_status_fluctuating') : t('student_status_flow')}
               </span>
             </div>
+
+            {/* Audio Toggle */}
+            <button 
+              onClick={toggleAudio}
+              className={`w-full flex items-center justify-center gap-2 py-2 mt-2 border rounded-md transition-all font-mono text-[10px] uppercase font-bold tracking-widest ${isPlaying ? 'bg-electric-blue/10 border-electric-blue text-electric-blue shadow-[0_0_10px_rgba(0,210,255,0.2)]' : 'bg-transparent border-glass-border text-text-secondary hover:text-electric-blue hover:border-electric-blue/50'}`}
+            >
+              <Waves size={14} className={isPlaying ? 'animate-pulse' : ''} />
+              {isPlaying ? t('student_audio_sync_on') : t('student_audio_sync_off')}
+            </button>
           </div>
         </CyberPanel>
       </div>

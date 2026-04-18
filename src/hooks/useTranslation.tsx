@@ -12,6 +12,17 @@ const translations = {
     nav_commander_full: "COMMANDER",
     nav_base_full: "FAMILY BASE",
 
+    // Login
+    login_title: "SYSTEM INITIALIZATION",
+    login_subtitle: "SELECT CONSCIOUSNESS VESSEL",
+    login_role_pilot: "PILOT VESSEL",
+    login_role_pilot_desc: "Access your inner dimension and clear the vortex.",
+    login_role_commander: "COMMAND CENTER",
+    login_role_commander_desc: "Monitor fleet telemetry and deploy guidance.",
+    login_role_base: "BASE STATION",
+    login_role_base_desc: "Analyze resonance and re-establish connection.",
+    login_enter: "INITIALIZE LINK",
+
     // Student View
     student_telemetry: "LIFESTREAM TELEMETRY",
     student_obsession: "Obsession Level",
@@ -25,6 +36,8 @@ const translations = {
     student_guide_ai: "GUIDE_AI",
     student_input_placeholder: "Transmit your emotional frequency...",
     student_send: "SEND",
+    student_audio_sync_on: "AUDIO RESONANCE: SYNCED",
+    student_audio_sync_off: "AUDIO RESONANCE: OFFLINE",
     
     // Teacher View
     teacher_starmap: "STAR MAP",
@@ -60,6 +73,17 @@ const translations = {
     nav_commander_full: "中枢指挥官",
     nav_base_full: "家庭基地",
 
+    // Login
+    login_title: "系统正在初始化",
+    login_subtitle: "请选择你的意识容器",
+    login_role_pilot: "领航员终端",
+    login_role_pilot_desc: "接入内维空间，疏导情绪能量漩涡。",
+    login_role_commander: "中枢指挥台",
+    login_role_commander_desc: "监控舰队遥测数据，部署干预策略。",
+    login_role_base: "家庭基地站",
+    login_role_base_desc: "分析同频共鸣，重建意识连接链路。",
+    login_enter: "建立神经链路",
+
     // Student View
     student_telemetry: "生命流遥测",
     student_obsession: "执念浓度",
@@ -73,6 +97,8 @@ const translations = {
     student_guide_ai: "向导_AI",
     student_input_placeholder: "传输你的全息情绪频率...",
     student_send: "发送广播",
+    student_audio_sync_on: "音频共振生成系统：已链接",
+    student_audio_sync_off: "音频共振生成系统：离线",
 
     // Teacher View
     teacher_starmap: "星图坐标",
