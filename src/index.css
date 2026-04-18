@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Elegant Dark Typography */
+  --font-sans: "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Courier New", Courier, monospace;
+  --font-display: "Helvetica Neue", Arial, sans-serif;
+
+  /* Elegant Dark Colors */
+  --color-space-navy: #05070a;
+  --color-panel-bg: rgba(15, 20, 28, 0.8);
+  --color-electric-blue: #00d2ff;
+  --color-accent-purple: #9d50bb;
+  --color-vortex-crimson: #ff4b2b;
+  --color-vortex-orange: #ff416c;
+  --color-text-primary: #e0e6ed;
+  --color-text-secondary: #94a3b8;
+
+  /* Keeping existing colors for compatibility where needed */
+  --color-eco-green: #39ff14; 
+  --color-luxury-gold: #ffbe0b;
+
+  --color-glass-bg: rgba(15, 20, 28, 0.8);
+  --color-glass-border: rgba(255, 255, 255, 0.05);
+}
+
+body {
+  background-color: var(--color-space-navy);
+  color: var(--color-text-primary);
+  overflow: hidden; /* App is a fullscreen dashboard */
+  font-family: var(--font-sans);
+}
+
+/* Starfield Background */
+.starfield {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: 
+      radial-gradient(white, rgba(255,255,255,0.2) 2px, transparent 40px),
+      radial-gradient(white, rgba(255,255,255,0.1) 1px, transparent 30px);
+  background-size: 550px 550px, 350px 350px;
+  background-position: 0 0, 40px 60px;
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.custom-shadow {
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Scrollbar rules for neat futuristic UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-electric-blue);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #fff;
+}
