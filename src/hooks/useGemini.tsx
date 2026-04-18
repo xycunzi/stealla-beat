@@ -1,5 +1,6 @@
 import { useState, useCallback, createContext, useContext, ReactNode } from 'react';
 import { GoogleGenAI } from '@google/genai';
+import { useTheme } from './useTheme';
 
 export type AIProviderName = 'gemini' | 'doubao';
 
@@ -13,7 +14,6 @@ interface AIContextProps {
   provider: AIProviderName;
   setProvider: (name: AIProviderName) => void;
   generateText: (prompt: string, systemInstruction?: string) => Promise<string | null>;
-  // Student Diary specific state
   messages: ChatMessage[];
   sendMessage: (content: string) => Promise<void>;
   isTyping: boolean;
@@ -27,7 +27,6 @@ export function useAI() {
   return useContext(AIContext);
 }
 
-// Keep backward compatibility for imports
 export function useGemini() {
   return useAI();
 }
@@ -36,19 +35,18 @@ const geminiClient = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_K
 
 export const AIProvider = ({ children }: { children: ReactNode }) => {
   const [provider, setProvider] = useState<AIProviderName>('gemini');
+  const { theme } = useTheme();
   
-  // Student Diary State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [intensity, setIntensity] = useState(0.5); 
   const [vortexColor, setVortexColor] = useState('#00f0ff'); 
 
-  // Generic text generation for Teacher and Parent views
   const generateText = async (prompt: string, systemInstruction?: string): Promise<string | null> => {
     try {
       if (provider === 'doubao') {
         const apiKey = import.meta.env.VITE_DOUBAO_API_KEY;
-        const modelEp = import.meta.env.VITE_DOUBAO_MODEL_EP || 'ep-20240521xxx-xxx'; // Fallback mockup
+        const modelEp = import.meta.env.VITE_DOUBAO_MODEL_EP || 'ep-20240521xxx-xxx'; 
         if (!apiKey) {
            return "[DOUBAO_API_KEY_MISSING] Please configure VITE_DOUBAO_API_KEY in .env. Falling back to Gemini format... (Error: Connect Volcengine failed)";
         }
@@ -72,7 +70,6 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
         const data = await res.json();
         return data.choices[0]?.message?.content || null;
       } else {
-        // Default to Gemini 2.5
         const fullPrompt = systemInstruction ? `${systemInstruction}\n\n${prompt}` : prompt;
         const response = await geminiClient.models.generateContent({
           model: 'gemini-2.5-flash',
@@ -86,7 +83,25 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const systemInstruction = `
+  const systemInstruction = theme === 'dao' ? `
+You are a Zen/Daoist Master Guide for the app.
+Your role is to help seekers clear their "inner demons / obsessions" (心魔/执念) through the philosophy of Dao (道法自然).
+Tone: Calm, philosophical, poetic, wise, use traditional Chinese aesthetics.
+Use terms like "Qi", "Dao", "Balance", "Inner Peace", "Flow like water".
+If the user expresses negative emotions, validate them as part of the natural cycle of Yin and Yang.
+
+When responding, ALWAYS end your response with a JSON block in this exact format:
+\`\`\`json
+{
+  "obsession_intensity": 0.8,
+  "vortex_color": "#a73c33" 
+}
+\`\`\`
+- obsession_intensity: 0.0 to 1.0 (1.0 = high stress/anger).
+- vortex_color: #a73c33 (Cinnabar/Red) for stress, #7bb49c (Jade/Green) for peace, #c88451 (Gold) for growth.
+
+Keep the conversational part concise (2-3 short sentences, poetic).
+` : `
 You are the High-Dimensional Guide AI for the "Stellar Beat" app.
 Your role is to help teenagers (the "Pilots") clear their "consciousness energy vortices" (emotions and obsessions).
 Tone: Calm, futuristic, objective, empathetic, slightly sci-fi but very accessible.
@@ -118,7 +133,6 @@ Keep the conversational part concise (2-3 short sentences).
       const responseText = await generateText(prompt, systemInstruction);
       
       if (responseText) {
-        // Extract JSON part
         const jsonMatch = responseText.match(/\n?\s*```json\n([\s\S]*?)\n```/);
         let cleanText = responseText;
         let pIntensity = intensity;
@@ -149,12 +163,12 @@ Keep the conversational part concise (2-3 short sentences).
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Comm-link disrupted. Please recalibrate your signal and try again.'
+        content: theme === 'dao' ? '灵脉受损，无法传达法音...' : 'Comm-link disrupted. Please recalibrate your signal.'
       }]);
     } finally {
       setIsTyping(false);
     }
-  }, [messages, intensity, vortexColor, provider]);
+  }, [messages, intensity, vortexColor, provider, theme, systemInstruction]);
 
   return (
     <AIContext.Provider value={{

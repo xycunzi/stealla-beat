@@ -1,27 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Serif+SC:wght@300;400;600&family=Zhi+Mang+Xing&display=swap');
 @import "tailwindcss";
 
+:root {
+  /* Default Cyberpunk Dark Variables */
+  --th-space-navy: #05070a;
+  --th-panel-bg: rgba(15, 20, 28, 0.8);
+  --th-electric-blue: #00d2ff;
+  --th-accent-purple: #9d50bb;
+  --th-vortex-crimson: #ff4b2b;
+  --th-vortex-orange: #ff416c;
+  --th-text-primary: #e0e6ed;
+  --th-text-secondary: #94a3b8;
+  --th-eco-green: #39ff14; 
+  --th-luxury-gold: #ffbe0b;
+  --th-font-sans: "Helvetica Neue", Arial, sans-serif;
+  --th-font-display: "Helvetica Neue", Arial, sans-serif;
+  --th-font-mono: "Courier New", Courier, monospace;
+}
+
+.theme-dao {
+  /* Chinese Daoist Abstract Variables (水墨/道法) */
+  --th-space-navy: #0c100e; /* 玄黑 */
+  --th-panel-bg: rgba(22, 26, 24, 0.85); /* 墨灰透 */
+  --th-electric-blue: #7bb49c; /* 秘色瓷绿 / Jade */
+  --th-accent-purple: #c5bba6; /* 宣纸白 */
+  --th-vortex-crimson: #a73c33; /* 朱砂红 */
+  --th-vortex-orange: #c88451; /* 泥金 */
+  --th-text-primary: #e6e2d6; /* 米色/宣纸 */
+  --th-text-secondary: #8c9991; /* 淡茶绿 */
+  --th-eco-green: #7bb49c; 
+  --th-luxury-gold: #c2a77d; /* 晨光金 */
+  --th-font-sans: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --th-font-display: "Zhi Mang Xing", "Noto Serif SC", cursive;
+  --th-font-mono: "KaiTi", "STKaiti", serif;
+}
+
 @theme {
-  /* Elegant Dark Typography */
-  --font-sans: "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Courier New", Courier, monospace;
-  --font-display: "Helvetica Neue", Arial, sans-serif;
+  /* Dynamic assignment based on current theme class */
+  --color-space-navy: var(--th-space-navy);
+  --color-panel-bg: var(--th-panel-bg);
+  --color-electric-blue: var(--th-electric-blue);
+  --color-accent-purple: var(--th-accent-purple);
+  --color-vortex-crimson: var(--th-vortex-crimson);
+  --color-vortex-orange: var(--th-vortex-orange);
+  --color-text-primary: var(--th-text-primary);
+  --color-text-secondary: var(--th-text-secondary);
+  --color-eco-green: var(--th-eco-green);
+  --color-luxury-gold: var(--th-luxury-gold);
 
-  /* Elegant Dark Colors */
-  --color-space-navy: #05070a;
-  --color-panel-bg: rgba(15, 20, 28, 0.8);
-  --color-electric-blue: #00d2ff;
-  --color-accent-purple: #9d50bb;
-  --color-vortex-crimson: #ff4b2b;
-  --color-vortex-orange: #ff416c;
-  --color-text-primary: #e0e6ed;
-  --color-text-secondary: #94a3b8;
+  --font-sans: var(--th-font-sans);
+  --font-display: var(--th-font-display);
+  --font-mono: var(--th-font-mono);
 
-  /* Keeping existing colors for compatibility where needed */
-  --color-eco-green: #39ff14; 
-  --color-luxury-gold: #ffbe0b;
-
-  --color-glass-bg: rgba(15, 20, 28, 0.8);
+  --color-glass-bg: var(--th-panel-bg);
   --color-glass-border: rgba(255, 255, 255, 0.05);
 }
 
@@ -30,6 +61,7 @@ body {
   color: var(--color-text-primary);
   overflow: hidden; /* App is a fullscreen dashboard */
   font-family: var(--font-sans);
+  transition: background-color 0.5s ease;
 }
 
 /* Starfield Background */
@@ -45,6 +77,15 @@ body {
   opacity: 0.3;
   z-index: 0;
   pointer-events: none;
+  transition: all 1s ease;
+}
+
+.theme-dao .starfield {
+  /* Replicate falling ink or dust instead of stars */
+  background-image: 
+      radial-gradient(rgba(197, 187, 166, 0.4), rgba(197, 187, 166, 0.1) 4px, transparent 40px);
+  background-size: 600px 600px;
+  opacity: 0.15;
 }
 
 /* CRT Scanlines Overlay */
@@ -62,6 +103,11 @@ body {
   pointer-events: none;
   z-index: 100;
   opacity: 0.8;
+  transition: opacity 0.5s;
+}
+
+.theme-dao .scanlines {
+  opacity: 0; /* No scanlines in Dao mode */
 }
 
 .bg-grid {
@@ -69,6 +115,11 @@ body {
   background-image: 
     linear-gradient(to right, rgba(0, 210, 255, 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 210, 255, 0.05) 1px, transparent 1px);
+  transition: opacity 0.5s;
+}
+
+.theme-dao .bg-grid {
+  opacity: 0; /* Hide cyber grid in Dao mode */
 }
 
 .glitch-text {

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { Hexagon, BookUser, Orbit, Sparkles } from 'lucide-react';
+import { Hexagon, BookUser, Orbit, Sparkles, Aperture } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation';
+import { useTheme } from '../hooks/useTheme';
 
 type Role = 'student' | 'teacher' | 'parent';
 
@@ -10,6 +11,12 @@ interface LoginViewProps {
 
 export function LoginView({ onLogin }: LoginViewProps) {
   const { t, toggleLang, lang } = useTranslation();
+  const { theme } = useTheme();
+
+  const isDao = theme === 'dao';
+  const tDao = (cyberKey: any, daoOverride: string) => {
+    return isDao && lang === 'zh' ? daoOverride : t(cyberKey);
+  };
 
   const container = {
     hidden: { opacity: 0 },
@@ -37,7 +44,7 @@ export function LoginView({ onLogin }: LoginViewProps) {
           transition={{ duration: 1.5, type: "spring" }}
           className="w-16 h-16 rounded-2xl bg-electric-blue/10 border border-electric-blue flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(0,210,255,0.3)] relative"
         >
-          <Sparkles className="w-8 h-8 text-electric-blue" />
+          {isDao ? <Aperture className="w-8 h-8 text-electric-blue" /> : <Sparkles className="w-8 h-8 text-electric-blue" />}
           <div className="absolute inset-0 animate-ping rounded-2xl border border-electric-blue/50" />
         </motion.div>
         
@@ -45,10 +52,10 @@ export function LoginView({ onLogin }: LoginViewProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          data-text={t('app_title')}
-          className="text-4xl md:text-5xl font-mono font-medium tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-electric-blue via-accent-purple to-electric-blue glitch-text"
+          data-text={tDao('app_title', '道法自然')}
+          className="text-4xl md:text-5xl font-display font-medium tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-electric-blue via-accent-purple to-electric-blue glitch-text"
         >
-          {t('app_title')}
+          {tDao('app_title', '道法自然')}
         </motion.h1>
         
         <motion.div 
@@ -57,8 +64,8 @@ export function LoginView({ onLogin }: LoginViewProps) {
           transition={{ delay: 0.4 }}
           className="mt-6 flex flex-col items-center gap-1"
         >
-          <h2 className="text-sm font-mono tracking-[0.3em] uppercase text-text-primary/80">{t('login_title')}</h2>
-          <p className="text-xs text-text-secondary font-mono uppercase tracking-widest">{t('login_subtitle')}</p>
+          <h2 className="text-sm font-mono tracking-[0.3em] uppercase text-text-primary/80">{tDao('login_title', '心法构建中...')}</h2>
+          <p className="text-xs text-text-secondary font-mono uppercase tracking-widest">{tDao('login_subtitle', '请选择你的本源脉络')}</p>
         </motion.div>
       </div>
 
@@ -81,12 +88,12 @@ export function LoginView({ onLogin }: LoginViewProps) {
              <div className="absolute inset-0 bg-electric-blue/20 rounded-full animate-ping pointer-events-none" />
              <Hexagon className="text-electric-blue w-6 h-6 z-10 relative" />
           </div>
-          <h3 className="w-full text-lg font-mono font-bold tracking-widest uppercase text-electric-blue mb-2">{t('login_role_pilot')}</h3>
+          <h3 className="w-full text-lg font-mono font-bold tracking-widest uppercase text-electric-blue mb-2">{tDao('login_role_pilot', '寻道者')}</h3>
           <p className="w-full text-xs text-text-secondary leading-relaxed flex-1">
-            {t('login_role_pilot_desc')}
+            {tDao('login_role_pilot_desc', '步入灵台，化解内心的执念心魔，寻找道法自然的宁静。')}
           </p>
           <div className="w-full mt-6 text-[10px] font-mono text-electric-blue opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between">
-            <span>[ SYSTEM: READY ]</span>
+            <span>{isDao ? '[ 灵脉: 已通 ]' : '[ SYSTEM: READY ]'}</span>
             <span>&rarr;</span>
           </div>
         </motion.button>
@@ -103,12 +110,12 @@ export function LoginView({ onLogin }: LoginViewProps) {
           <div className="w-12 h-12 rounded-full bg-eco-green/20 border border-eco-green flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(57,255,20,0.4)] relative">
             <BookUser className="text-eco-green w-6 h-6 z-10 relative" />
           </div>
-          <h3 className="w-full text-lg font-mono font-bold tracking-widest uppercase text-eco-green mb-2">{t('login_role_commander')}</h3>
+          <h3 className="w-full text-lg font-mono font-bold tracking-widest uppercase text-eco-green mb-2">{tDao('login_role_commander', '引路人')}</h3>
           <p className="w-full text-xs text-text-secondary leading-relaxed flex-1">
-            {t('login_role_commander_desc')}
+            {tDao('login_role_commander_desc', '洞察万象微步，点拨陷入心魔障壁中的寻道者。')}
           </p>
           <div className="w-full mt-6 text-[10px] font-mono text-eco-green opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between">
-            <span>[ CONSOLE: LINKED ]</span>
+            <span>{isDao ? '[ 天机: 已启 ]' : '[ CONSOLE: LINKED ]'}</span>
             <span>&rarr;</span>
           </div>
         </motion.button>
@@ -125,12 +132,12 @@ export function LoginView({ onLogin }: LoginViewProps) {
           <div className="w-12 h-12 rounded-full bg-luxury-gold/20 border border-luxury-gold flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,190,11,0.4)] relative">
             <Orbit className="text-luxury-gold w-6 h-6 z-10 relative" />
           </div>
-          <h3 className="w-full text-lg font-mono font-bold tracking-widest uppercase text-luxury-gold mb-2">{t('login_role_base')}</h3>
+          <h3 className="w-full text-lg font-mono font-bold tracking-widest uppercase text-luxury-gold mb-2">{tDao('login_role_base', '护法阵')}</h3>
           <p className="w-full text-xs text-text-secondary leading-relaxed flex-1">
-            {t('login_role_base_desc')}
+            {tDao('login_role_base_desc', '镇守后方，通过血脉共振护佑寻道者的平衡。')}
           </p>
           <div className="w-full mt-6 text-[10px] font-mono text-luxury-gold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between">
-            <span>[ RESONANCE: STANDBY ]</span>
+            <span>{isDao ? '[ 阵法: 待命 ]' : '[ RESONANCE: STANDBY ]'}</span>
             <span>&rarr;</span>
           </div>
         </motion.button>
